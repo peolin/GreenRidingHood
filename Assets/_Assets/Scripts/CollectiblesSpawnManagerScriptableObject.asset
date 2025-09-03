@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a7c825112c09b6408c6ae0b2abb1594, type: 3}
+  m_Name: CollectiblesSpawnManagerScriptableObject
+  m_EditorClassIdentifier: 
+  prefabName: Collectible
+  numberOfPrefabsToCreate: 5
+  spawnPoints:
+  - {x: 50, y: 0.5, z: 50}
+  - {x: 50, y: 2, z: 50}
+  - {x: 40, y: 0.5, z: 40}
+  - {x: 57, y: 0.6, z: 57}
+  - {x: 45, y: 3, z: 45}
+  - {x: 19, y: 2, z: 19}
