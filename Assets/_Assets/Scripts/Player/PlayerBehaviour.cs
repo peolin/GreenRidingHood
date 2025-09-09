@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum PlayerState
 {
@@ -10,18 +11,21 @@ public enum PlayerState
     Jumping
 }
 
-public class PlayerBehavior : MonoBehaviour
+public class PlayerBehaviour : MonoBehaviour
 {
     private PlayerState _currentState;
-    public PlayerState CurrentState
+    /*public PlayerState CurrentState
     {
         get => _currentState;
-    }
+    }*/
+
+    public static event Action<PlayerState> OnPlayerStateChanged;
 
     [Header("Player Movement")]
     [SerializeField] private bool CanMove = true;
     private Vector3 _moveDirection = Vector3.zero;
-    private bool _isRunning = false;
+    private bool _isMoving = false;
+    private bool _wasMoving = false;
 
     [SerializeField] private float _walkingSpeed = 7.5f;
     [SerializeField] private float _runningSpeed = 11f;
@@ -39,12 +43,10 @@ public class PlayerBehavior : MonoBehaviour
     [SerializeField] private Camera _playerCamera;
     private float _limitXRotation = 55f;
 
-    //private CharacterController _characterController;
     private Rigidbody _rigidbody;
 
     private void Awake()
     {
-        //_characterController = GetComponent<CharacterController>();
         _rigidbody = GetComponent<Rigidbody>();
     }
 
@@ -71,35 +73,41 @@ public class PlayerBehavior : MonoBehaviour
 
     private void CheckMovement()
     {
-        if (Input.GetKey(KeyCode.LeftShift))
+        float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxis("Horizontal");
+        _isMoving = ((horizontal != 0) || (vertical != 0));
+
+        if (_isMoving)
         {
-            _currentState = PlayerState.Running;
-            MovePlayer(_runningSpeed);
+            float speed = Input.GetKey(KeyCode.LeftShift) ? _runningSpeed : _walkingSpeed;
+            _currentState = Input.GetKey(KeyCode.LeftShift) ? PlayerState.Running : PlayerState.Walking;
+
+            MovePlayer(speed, vertical, horizontal);
         }
-        else
+        else if (_wasMoving)
         {
-            _currentState = PlayerState.Walking;
-            MovePlayer(_walkingSpeed);
+            _currentState = PlayerState.Idle;
+            //StopMovement();
         }
+
+        _wasMoving = _isMoving;
 
         HandleJump();
 
-        _currentState = PlayerState.Idle;
+        OnPlayerStateChanged?.Invoke(_currentState);
     }
 
-    private void MovePlayer(float speed)
+    private void MovePlayer(float speed, float vertical, float horizontal)
     {
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
-
-        forward *= Input.GetAxis("Vertical") * speed;
-        right *= Input.GetAxis("Horizontal") * speed;
+        forward *= vertical * speed;
+        right *= horizontal * speed;
 
         _moveDirection = forward + right;
 
         _rigidbody.velocity = _moveDirection;
-        //_characterController.Move(moveDirection * Time.deltaTime); // not the best
     }
 
     private void HandleJump()
@@ -129,15 +137,5 @@ public class PlayerBehavior : MonoBehaviour
             _groundCheckDistance,
             _groundLayerMask
         );
-    }
-
-    private void MoveAxis(float speed) // clamped to straight axis movement, no rotation
-    {
-        Vector3 newPosition = transform.position;
-
-        newPosition.z += Input.GetAxis("Vertical") * speed;
-        newPosition.x += Input.GetAxis("Horizontal") * speed;
-
-        transform.position = newPosition;
     }
 }
