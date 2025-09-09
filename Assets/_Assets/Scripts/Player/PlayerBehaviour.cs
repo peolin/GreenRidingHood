@@ -2,8 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerState
+{
+    Idle,
+    Walking,
+    Running,
+    Jumping
+}
+
 public class PlayerBehavior : MonoBehaviour
 {
+    private PlayerState _currentState;
+    public PlayerState CurrentState
+    {
+        get => _currentState;
+    }
+
     [Header("Player Movement")]
     [SerializeField] private bool CanMove = true;
     private Vector3 _moveDirection = Vector3.zero;
@@ -13,7 +27,7 @@ public class PlayerBehavior : MonoBehaviour
     [SerializeField] private float _runningSpeed = 11f;
 
     [SerializeField] private float _jumpingSpeed = 8f;
-    
+
     [SerializeField] private float _rotationSpeed = 100f;
 
     [Header("Grabity Physics")]
@@ -21,7 +35,7 @@ public class PlayerBehavior : MonoBehaviour
     [SerializeField] private LayerMask _groundLayerMask = 6;
     [SerializeField] private float _gravity = 100f;
 
-    [Header ("Camera Perspective")]
+    [Header("Camera Perspective")]
     [SerializeField] private Camera _playerCamera;
     private float _limitXRotation = 55f;
 
@@ -36,6 +50,7 @@ public class PlayerBehavior : MonoBehaviour
 
     private void Start()
     {
+        _currentState = PlayerState.Idle;
         Cursor.lockState = CursorLockMode.Locked; // lock cursor in center
     }
 
@@ -58,16 +73,18 @@ public class PlayerBehavior : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            //_isRunning = true;
+            _currentState = PlayerState.Running;
             MovePlayer(_runningSpeed);
         }
         else
         {
-            //_isRunning = false;
+            _currentState = PlayerState.Walking;
             MovePlayer(_walkingSpeed);
         }
 
         HandleJump();
+
+        _currentState = PlayerState.Idle;
     }
 
     private void MovePlayer(float speed)
@@ -89,6 +106,7 @@ public class PlayerBehavior : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
         {
+            _currentState = PlayerState.Jumping;
 
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _jumpingSpeed, _rigidbody.velocity.z);
         }
