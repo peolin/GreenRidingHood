@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Ground
   - Collectible
+  - Gravel
+  - Grass
+  - Leaves
   layers:
   - Default
   - TransparentFX
