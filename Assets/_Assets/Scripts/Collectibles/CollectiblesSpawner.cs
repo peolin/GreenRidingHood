@@ -5,7 +5,7 @@ namespace Collectibles
     public class CollectiblesSpawner : MonoBehaviour
     {
         [SerializeField] private GameObject _entityToSpawn;
-        [SerializeField] private SpawnManagerScriptableObject _spawnManagerValues;
+        [SerializeField] private SpawnManagerScriptableObject _collectiblesSpawnerValues;
 
         private int _intstanceNumber = 1;
 
@@ -18,13 +18,13 @@ namespace Collectibles
         {
             int currentSpawnPointIndex = 0;
 
-            for (int i = 0; i < _spawnManagerValues.numberOfPrefabsToCreate; i++)
+            for (int i = 0; i < _collectiblesSpawnerValues.numberOfPrefabsToCreate; i++)
             {
-                GameObject currentEntity = Instantiate(_entityToSpawn, _spawnManagerValues.spawnPoints[currentSpawnPointIndex], Quaternion.identity);
+                GameObject currentEntity = Instantiate(_entityToSpawn, _collectiblesSpawnerValues.spawnPoints[currentSpawnPointIndex], Quaternion.identity);
 
-                currentEntity.name = _spawnManagerValues.prefabName + _intstanceNumber;
+                currentEntity.name = _collectiblesSpawnerValues.prefabName + _intstanceNumber;
 
-                currentSpawnPointIndex = (currentSpawnPointIndex + 1) % _spawnManagerValues.spawnPoints.Length;
+                currentSpawnPointIndex = (currentSpawnPointIndex + 1) % _collectiblesSpawnerValues.spawnPoints.Length;
 
                 _intstanceNumber++;
             }

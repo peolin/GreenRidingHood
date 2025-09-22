@@ -1,35 +1,39 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Collectibles
 {
     public class CollectiblesManager : MonoBehaviour
     {
-        [SerializeField] private Vector3 _collectiblePosition;
-        [SerializeField] private GameObject _collectblePrefab;
+        [SerializeField] private AudioSource _audioSource;
 
-        private GameObject _currentCollectible;
-        private CollectibleController _currentCollectibleController;
+        private CollectibleController _collectibleController;
 
-        private void InstantiateCollectible()
+        private void OnEnable()
         {
-            _currentCollectible = Instantiate(_collectblePrefab, _collectiblePosition, Quaternion.identity);
-
-            _currentCollectibleController = _currentCollectible.GetComponent<CollectibleController>();
-
-            _currentCollectibleController.OnCollectibleTrigger += HandleObjectCollection;
+            CollectibleController.OnCollectibleTrigger += HandleObjectCollection;
         }
 
-        private void HandleObjectCollection()
+        private void OnDisable()
         {
-            _currentCollectibleController.DestroyCollectible();
+            CollectibleController.OnCollectibleTrigger -= HandleObjectCollection;
         }
 
-        void Update()
+        private void HandleObjectCollection(CollectibleController _triggeredController)
         {
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                InstantiateCollectible();
-            }
+            _audioSource.Play();
+
+            _collectibleController = _triggeredController;
+
+            StartCoroutine(DestroyCollectedObject());
+        }
+
+        private IEnumerator DestroyCollectedObject()
+        {
+            yield return new WaitForSeconds(1);
+            _collectibleController.DestroyCollectible();
+            _collectibleController = null;
         }
     }
 }

@@ -5,11 +5,11 @@ namespace Collectibles
 {
     public class CollectibleController : MonoBehaviour
     {
-        public event Action OnCollectibleTrigger;
+        public static event Action<CollectibleController> OnCollectibleTrigger;
 
         private void OnTriggerEnter()
         {
-            OnCollectibleTrigger?.Invoke();
+            OnCollectibleTrigger?.Invoke(this);
         }
 
         public void DestroyCollectible()
