@@ -1,2 +1,15 @@
-Mommy said to bring the bread to the grandmother!
-Better make it quick so the bread is still warm! 
+[Start]
+Mommy said to bring the bread to the grandmother! \n Better make it quick so the bread is still warm!
+
+[PHASE 1: Flower collecting - walking sim]
+Oh, what a pretty flower! \n Maybe I can collect some more and make a bouquet for granny?
+Another one!
+Now there are three flowers!
+Another one!
+What a pretty flower!
+Now, that'll make a very nice bouquet!
+
+[BRIDGE jumpscare]
+Grandmother's village is nearby, just need to cross the bridge.
+
+What was that? I'm sure I heard someone behind me. \n Oh, maybe it was just a deer. Daddy said it's hunting season soon.

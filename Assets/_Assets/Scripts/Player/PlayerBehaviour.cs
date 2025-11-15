@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Collectibles;
 
 public enum PlayerState
 {
@@ -14,18 +15,13 @@ public enum PlayerState
 public class PlayerBehaviour : MonoBehaviour
 {
     private PlayerState _currentState;
-    /*public PlayerState CurrentState
-    {
-        get => _currentState;
-    }*/
-
     public static event Action<PlayerState> OnPlayerStateChanged;
 
     [Header("Player Movement")]
-    [SerializeField] private bool CanMove = true;
+    private bool _canMove = true;
     private Vector3 _moveDirection = Vector3.zero;
     private bool _isMoving = false;
-    private bool _wasMoving = false;
+    private bool _wasMoving = false; // maybe remove idle overall?
 
     [SerializeField] private float _walkingSpeed = 7.5f;
     [SerializeField] private float _runningSpeed = 11f;
@@ -45,6 +41,18 @@ public class PlayerBehaviour : MonoBehaviour
 
     private Rigidbody _rigidbody;
 
+    private void OnEnable()
+    {
+        CollectiblesManager.PlayerFreezeRequested += FreezePlayer;
+        TextPanelManager.OnCollectibleTextHidden += UnfreezePlayer;
+    }
+
+    private void OnDisable()
+    {
+        CollectiblesManager.PlayerFreezeRequested -= FreezePlayer;
+        TextPanelManager.OnCollectibleTextHidden -= UnfreezePlayer;
+    }    
+
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -58,6 +66,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!_canMove) return;
         RotatePlayer();
         CheckMovement();
 
@@ -75,9 +84,9 @@ public class PlayerBehaviour : MonoBehaviour
     {
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
-        _isMoving = ((horizontal != 0) || (vertical != 0));
+        _isMoving = (horizontal != 0) || (vertical != 0);
 
-        if (_isMoving)
+        if (_isMoving & _canMove)
         {
             float speed = Input.GetKey(KeyCode.LeftShift) ? _runningSpeed : _walkingSpeed;
             _currentState = Input.GetKey(KeyCode.LeftShift) ? PlayerState.Running : PlayerState.Walking;
@@ -87,7 +96,6 @@ public class PlayerBehaviour : MonoBehaviour
         else if (_wasMoving)
         {
             _currentState = PlayerState.Idle;
-            //StopMovement();
         }
 
         _wasMoving = _isMoving;
@@ -137,5 +145,15 @@ public class PlayerBehaviour : MonoBehaviour
             _groundCheckDistance,
             _groundLayerMask
         );
+    }
+
+    private void FreezePlayer()
+    {
+        _canMove = false;
+    }
+
+    private void UnfreezePlayer()
+    {
+        _canMove = true;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,9 @@ namespace Collectibles
         [SerializeField] private AudioSource _audioSource;
 
         private CollectibleController _collectibleController;
+
+        public static event Action<string> OnObjectCollection;
+        public static event Action PlayerFreezeRequested;
 
         private void OnEnable()
         {
@@ -22,17 +26,23 @@ namespace Collectibles
 
         private void HandleObjectCollection(CollectibleController _triggeredController)
         {
+            if (_collectibleController == _triggeredController) return;
+
             _audioSource.Play();
 
             _collectibleController = _triggeredController;
 
-            StartCoroutine(DestroyCollectedObject());
+            OnObjectCollection?.Invoke("Collected this object!"); // get data from collectible
+            PlayerFreezeRequested?.Invoke();
+
+            TextPanelManager.OnCollectibleTextHidden += DestroyCollectedObject;
         }
 
-        private IEnumerator DestroyCollectedObject()
+        private void DestroyCollectedObject()
         {
-            yield return new WaitForSeconds(1);
+            TextPanelManager.OnCollectibleTextHidden -= DestroyCollectedObject;
             _collectibleController.DestroyCollectible();
+
             _collectibleController = null;
         }
     }
