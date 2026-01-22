@@ -115,7 +115,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         _moveDirection = forward + right;
 
-        _rigidbody.velocity = _moveDirection;
+        _rigidbody.linearVelocity = _moveDirection;
     }
 
     private void HandleJump()
@@ -124,7 +124,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             _currentState = PlayerState.Jumping;
 
-            _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _jumpingSpeed, _rigidbody.velocity.z);
+            _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, _jumpingSpeed, _rigidbody.linearVelocity.z);
         }
     }
 
