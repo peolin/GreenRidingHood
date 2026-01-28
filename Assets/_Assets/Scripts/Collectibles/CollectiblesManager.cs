@@ -7,7 +7,7 @@ namespace Collectibles
 {
     public class CollectiblesManager : MonoBehaviour
     {
-        [SerializeField] private AudioSource _audioSource;
+        //[SerializeField] private AudioSource _audioSource;
 
         private CollectibleController _collectibleController;
 
@@ -28,7 +28,8 @@ namespace Collectibles
         {
             if (_collectibleController == _triggeredController) return;
 
-            _audioSource.Play();
+            //_audioSource.Play();
+            AudioManager.Instance.PlayCollectibleAudio();
 
             _collectibleController = _triggeredController;
 

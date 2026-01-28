@@ -7,7 +7,7 @@ namespace Collectibles
         [SerializeField] private GameObject _entityToSpawn;
         [SerializeField] private SpawnManagerScriptableObject _collectiblesSpawnerValues;
 
-        private int _intstanceNumber = 1;
+        private int _instanceNumber = 1;
 
         private void Start()
         {
@@ -22,11 +22,11 @@ namespace Collectibles
             {
                 GameObject currentEntity = Instantiate(_entityToSpawn, _collectiblesSpawnerValues.spawnPoints[currentSpawnPointIndex], Quaternion.identity);
 
-                currentEntity.name = _collectiblesSpawnerValues.prefabName + _intstanceNumber;
+                currentEntity.name = _collectiblesSpawnerValues.prefabName + _instanceNumber;
 
                 currentSpawnPointIndex = (currentSpawnPointIndex + 1) % _collectiblesSpawnerValues.spawnPoints.Length;
 
-                _intstanceNumber++;
+                _instanceNumber++;
             }
         }
     }
