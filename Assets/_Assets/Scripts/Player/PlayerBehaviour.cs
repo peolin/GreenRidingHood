@@ -30,7 +30,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     [SerializeField] private float _rotationSpeed = 100f;
 
-    [Header("Grabity Physics")]
+    [Header("Gravity Physics")]
     [SerializeField] private float _groundCheckDistance = 1f;
     [SerializeField] private LayerMask _groundLayerMask = 6;
     [SerializeField] private float _gravity = 100f;
@@ -43,15 +43,15 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void OnEnable()
     {
-        CollectiblesManager.PlayerFreezeRequested += FreezePlayer;
+        CollectiblesManager.PlayerFreezeRequested += HandlePlayerFreeze;
         TextPanelManager.OnCollectibleTextHidden += UnfreezePlayer;
     }
 
     private void OnDisable()
     {
-        CollectiblesManager.PlayerFreezeRequested -= FreezePlayer;
+        CollectiblesManager.PlayerFreezeRequested -= HandlePlayerFreeze;
         TextPanelManager.OnCollectibleTextHidden -= UnfreezePlayer;
-    }    
+    }
 
     private void Awake()
     {
@@ -68,9 +68,9 @@ public class PlayerBehaviour : MonoBehaviour
     {
         if (!_canMove) return;
         RotatePlayer();
-        CheckMovement();
 
         ApplyGravity();
+        CheckMovement();
     }
 
     private void RotatePlayer()
@@ -88,19 +88,23 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (_isMoving & _canMove)
         {
-            float speed = Input.GetKey(KeyCode.LeftShift) ? _runningSpeed : _walkingSpeed;
             _currentState = Input.GetKey(KeyCode.LeftShift) ? PlayerState.Running : PlayerState.Walking;
 
+            float speed = Input.GetKey(KeyCode.LeftShift) ? _runningSpeed : _walkingSpeed;
             MovePlayer(speed, vertical, horizontal);
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        {
+            _currentState = PlayerState.Jumping;
+
+            _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, _jumpingSpeed, _rigidbody.linearVelocity.z);
         }
         else if (_wasMoving)
         {
+            _rigidbody.linearVelocity = Vector3.zero;
             _currentState = PlayerState.Idle;
         }
-
         _wasMoving = _isMoving;
-
-        HandleJump();
 
         OnPlayerStateChanged?.Invoke(_currentState);
     }
@@ -118,6 +122,7 @@ public class PlayerBehaviour : MonoBehaviour
         _rigidbody.linearVelocity = _moveDirection;
     }
 
+    /*
     private void HandleJump()
     {
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
@@ -127,7 +132,7 @@ public class PlayerBehaviour : MonoBehaviour
             _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, _jumpingSpeed, _rigidbody.linearVelocity.z);
         }
     }
-
+    */
     private void ApplyGravity()
     {
         _rigidbody.AddForce(new Vector3(0, -1.0f, 0) * _rigidbody.mass * _gravity);
@@ -147,9 +152,23 @@ public class PlayerBehaviour : MonoBehaviour
         );
     }
 
-    private void FreezePlayer()
+    private IEnumerator PlayerFreezer()
     {
+        Debug.Log("Player is frozen!");
+
+        _rigidbody.velocity = Vector3.zero;
         _canMove = false;
+        _currentState = PlayerState.Idle;
+
+        yield return new WaitForSeconds(2f);
+
+        UnfreezePlayer();
+        Debug.Log("Player is free!");
+    }
+
+    private void HandlePlayerFreeze()
+    {
+        StartCoroutine(PlayerFreezer());
     }
 
     private void UnfreezePlayer()
