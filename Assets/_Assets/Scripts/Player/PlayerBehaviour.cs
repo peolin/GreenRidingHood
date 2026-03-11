@@ -16,7 +16,9 @@ public class PlayerBehaviour : MonoBehaviour
 {
     private PlayerState _currentState;
     public static event Action<PlayerState> OnPlayerStateChanged;
-
+    
+    [SerializeField] private UIManager _uiManager;
+    
     [Header("Player Movement")]
     private bool _canMove = true;
     private Vector3 _moveDirection = Vector3.zero;
@@ -44,13 +46,13 @@ public class PlayerBehaviour : MonoBehaviour
     private void OnEnable()
     {
         CollectiblesManager.PlayerFreezeRequested += HandlePlayerFreeze;
-        TextPanelManager.OnCollectibleTextHidden += UnfreezePlayer;
+        _uiManager.OnUIInteractionEnded += UnfreezePlayer;
     }
 
     private void OnDisable()
     {
         CollectiblesManager.PlayerFreezeRequested -= HandlePlayerFreeze;
-        TextPanelManager.OnCollectibleTextHidden -= UnfreezePlayer;
+        _uiManager.OnUIInteractionEnded -= UnfreezePlayer;
     }
 
     private void Awake()
@@ -66,10 +68,11 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!_canMove) return;
-        RotatePlayer();
-
         ApplyGravity();
+        
+        if (!_canMove) return;
+        
+        RotatePlayer();
         CheckMovement();
     }
 
@@ -152,27 +155,20 @@ public class PlayerBehaviour : MonoBehaviour
         );
     }
 
-    private IEnumerator PlayerFreezer()
-    {
-        Debug.Log("Player is frozen!");
-
-        _rigidbody.velocity = Vector3.zero;
-        _canMove = false;
-        _currentState = PlayerState.Idle;
-
-        yield return new WaitForSeconds(2f);
-
-        UnfreezePlayer();
-        Debug.Log("Player is free!");
-    }
-
     private void HandlePlayerFreeze()
     {
-        StartCoroutine(PlayerFreezer());
+        Debug.Log("Player is frozen!");
+        
+        _rigidbody.linearVelocity = Vector3.zero;
+        _canMove = false;
+        _currentState = PlayerState.Idle;
+        OnPlayerStateChanged?.Invoke(_currentState);
     }
 
     private void UnfreezePlayer()
     {
         _canMove = true;
+        
+        Debug.Log("Player is free!");
     }
 }

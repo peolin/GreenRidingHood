@@ -7,11 +7,11 @@ namespace Collectibles
 {
     public class CollectiblesManager : MonoBehaviour
     {
-        //[SerializeField] private AudioSource _audioSource;
+        [SerializeField] private UIManager _uiManager;
 
         private CollectibleController _collectibleController;
 
-        public static event Action<string> OnObjectCollection;
+        public event Action OnObjectCollection;
         public static event Action PlayerFreezeRequested;
 
         private void OnEnable()
@@ -24,27 +24,29 @@ namespace Collectibles
             CollectibleController.OnCollectibleTrigger -= HandleObjectCollection;
         }
 
-        private void HandleObjectCollection(CollectibleController _triggeredController)
+        private void HandleObjectCollection(CollectibleController triggeredController)
         {
-            if (_collectibleController == _triggeredController) return;
+            if (_collectibleController == triggeredController) return;
 
-            //_audioSource.Play();
             AudioManager.Instance.PlayCollectibleAudio();
 
-            _collectibleController = _triggeredController;
+            _collectibleController = triggeredController;
 
-            OnObjectCollection?.Invoke("Collected this object!"); // get data from collectible
+            OnObjectCollection?.Invoke();
             PlayerFreezeRequested?.Invoke();
 
-            TextPanelManager.OnCollectibleTextHidden += DestroyCollectedObject;
+            _uiManager.OnUIInteractionEnded += DestroyCollectedObject;
         }
 
-        private void DestroyCollectedObject()
+        private void DestroyCollectedObject() // shift to using a pool
         {
-            TextPanelManager.OnCollectibleTextHidden -= DestroyCollectedObject;
-            _collectibleController.DestroyCollectible();
+            _uiManager.OnUIInteractionEnded -= DestroyCollectedObject;
 
-            _collectibleController = null;
+            if (_collectibleController != null)
+            {
+                _collectibleController.DestroyCollectible();
+                _collectibleController = null;
+            }
         }
     }
 }

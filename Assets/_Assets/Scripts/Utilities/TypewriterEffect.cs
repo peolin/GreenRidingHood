@@ -32,29 +32,26 @@ public class TypewriterEffect : MonoBehaviour
     private WaitForSeconds _textboxFullEventDelay;
     [SerializeField][Range(0.1f, 0.5f)] private float sendDoneDelay = 0.25f;
 
-    public static event Action CompleteTextRevealed;
+    public event Action CompleteTextRevealed;
     public static event Action<char> CharacterRevealed;
 
     private void Awake()
     {
-        _textBox = GetComponent<TMP_Text>();
-
         _simpleDelay = new WaitForSeconds(1 / charactersPerSecond);
         _interpunctuationDelay = new WaitForSeconds(interpunctuationDelay);
         _skipDelay = new WaitForSeconds(1 / (charactersPerSecond * skipSpeedup));
         _textboxFullEventDelay = new WaitForSeconds(sendDoneDelay);
     }
-
-    /*private void Start()
-    {
-        StartTypewriter(_demoTextFile);
-    }*/
-
+    
     // Public method to start typewriter with new text
     public void StartTypewriter(string newText)
     {
-        if (!_readyForNewText)
-            return;
+        if (_textBox == null)
+        {
+            _textBox = GetComponent<TMP_Text>();
+        }
+        
+        if (!_readyForNewText) return;
 
         _textBox.text = newText;
         // Force TMPro to update its text info
@@ -101,9 +98,9 @@ public class TypewriterEffect : MonoBehaviour
             {
                 _textBox.maxVisibleCharacters++;
                 yield return _textboxFullEventDelay;
+                Debug.Log("Typewriter complete!");
                 CompleteTextRevealed?.Invoke();
                 _readyForNewText = true;
-                Debug.Log("Typewriter complete!");
                 yield break;
             }
 

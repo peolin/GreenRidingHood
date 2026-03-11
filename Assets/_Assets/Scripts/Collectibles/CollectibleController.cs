@@ -14,7 +14,7 @@ namespace Collectibles
 
         public void DestroyCollectible()
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // add generic pool to save cpu
         }
     }
 }

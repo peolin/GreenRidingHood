@@ -1,0 +1,91 @@
+﻿{
+  "script":
+  {
+    "girl_start": "Mommy said to bring the bread loaf and cookies to the grandmother! \n Better make it quick so the bread is still warm!",
+    "girl_flowerpicking":
+            [
+              "Oh, what a pretty flower! \n Maybe I can collect some more and make a bouquet for granny?",
+              "Another one!",
+              "Now there are three flowers!",
+              "What was that? I'm sure I heard someone behind me. \n Oh, maybe it was just a deer. Mommy said it's hunting season soon.",
+              "Another one!",
+              "Such a cute flower!",
+              "Huh? I think I saw a shadow over there.",
+              "Now, that'll make a very nice bouquet!"
+            ],
+    "girl_wolf_encounter":
+            [
+              "Ah!",
+              "Oh, I'm so sorry, mister. I didn't see you there.",
+              "Are you also looking for flowers? \n My granny loves these little blue ones, have you seen any nearby?",
+              "Oh, you did? Could you show me, please?",
+              "You're so tall! Mommy told me my daddy was also very tall. As tall as a big tree in granny's backyard!",
+              "Do you also live in the village on the creek? You must know my granny. Her house is the one closes to the forest.",
+              "Mister, are the flowers further away? \n I should be at my granny's before dinner.",
+              "I can't see her house from here anymore, I... I don't think I should go any further. Mister, let's go back to the road.",
+              "What? I... No.",
+              "Nonono. No! No, please!",
+              "No! No, please, no! Mommy! Mommy, help! No!"
+            ],
+    "mom_start":
+            [
+              "Now to wash off mud and I'm done with the flowerbed. Last year's daisies were very nice, hopefully this time we can plant some more. Annie will love having fresh blossoms near the windows.",
+              "It feels like just yesterday she was just a little baby, all smiles while cradled in her fathers arms. \n I am sure you are happy watching over how she's growing up, dear. If only you were here with us for a little longer.",
+              "The sun's setting. Mother must've taken Annie in for a night. \n Well, I don't think I have anything urgent for tomorrow... Yeah, I'll go check on them.",
+              "Better hurry before it's dusk."
+            ],
+    "mom_path": 
+            [
+              "I shouldn't stray from the path."
+            ],
+    "mom_bridge": 
+            [
+              "Mother, Annie, I'm here! Let's have some tea, I brought over some of my raspberry jam.",
+              "Hey! Annie, did you know I'll be coming and decided to play a trick on me? \n Come on, come out, dear!",
+              "Mother? Mother, where are you?",
+              "Oh, a note.",
+              "'Mary, I am going away to that Willow Creek market for a few days. Please, check up on my coup and leave a pack of eggs on the eave for my neighbor, Gina.'",
+              "'Tell Annie I will buy her some of that pear marmalade she like. \n Forgive me for leaving without a notice.'",
+              "'Love, \n granny'",
+              "Annie must've seen this note. Annie? Annie? Darling, come out! Let's stay the night at granny's, it's getting late. Annie?",
+              "Dear, stop playing around! You're making me worried. Where are you? Annie?",
+              "Oh no. No no no. I don't see her anywhere.",
+              "She must've seen the note and decided to go back home.",
+              "Yeah, that's right. We must've missed each-other in the woods. That's it.",
+              "I... I must hurry."
+            ],
+    "mom_trailing": 
+            [
+              "Annie? Annie! Where are you, baby?",
+              "She might've wondered off the path. Annie? Annie?!",
+              "Huh? I think I saw a shadow. \n Nevermind, must be just deer running around.",
+              "Annie? Annie!",
+              "What's that? Something's caught on the bush.",
+              "...",
+              "White ribbon. I tied one in her braid today. \n Annie?! Annie, dear, are you here?!",
+              "Huh? Is that.. Is that our basket?!",
+              "...",
+              "Why would she leave it here. It's empty. Did she that mother's not home and decided to eat the bread on the way back home?",
+              "Annie! No-no, she would've never thrown away new things like this. Annie?! Are you here?!",
+              "Did she loose it then? Was she running? Annie?! Annie!",
+              "What?! God, I am now hearing things.",
+              "Annie? Is that you?! Annie!",
+              "You promised me you wouldn't play out in the mud today, why are you hiding in the bushes? You know it's hard to get the green stains out.",
+              "Wha-",
+              "...",
+              "Oh god. No. Nonono. No. This can't be. No. Nononono. Her little white socks...",
+              "Annie?! ANNIE?! WHERE ARE YOU?!",
+              "What the-",
+              "Huh? Who's... Who's that. \n Hey! Who are you? Yes, you, I can see you! Who are you?!",
+              "Did you do this to her?! Answer me! Hey! \n Fuck",
+              "...",
+              "God, no, please, no...",
+              "...",
+              "Her favorite green cape... She never took the hood off, silly goose... Why is it all red now...? Oh my baby, no... No, no...",
+              "*shriek*",
+              "...",
+              "YOU. I SEE YOU. WHAT HAVE YOU DONE TO MY DAUGHTER?! WHERE IS SHE?!",
+              "ANSWER ME! YOU SICK FUCK, ANSWER ME!"
+            ]
+  }
+}

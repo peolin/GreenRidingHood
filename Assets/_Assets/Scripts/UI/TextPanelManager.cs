@@ -5,63 +5,81 @@ using UnityEngine;
 using TMPro;
 using Collectibles;
 
+/// <summary>
+/// Handles text display and its typewriter effect
+/// </summary>
 public class TextPanelManager : MonoBehaviour
 {
     private string _demoText = "Mommy said to bring the bread to the grandmother! \n Better make it quick so the bread is still warm! ";
+    
+    [Header("Component References")]
     [SerializeField] private GameObject _tmproBox;
+    [SerializeField] private TypewriterEffect _typewriter;
     [SerializeField] private GameObject _bgImage;
-    private TextMeshProUGUI _tmpro;
-    private TypewriterEffect _typewriter;
 
-    public static event Action OnCollectibleTextHidden;
+    [Header("Text Panel Settings")] 
+    [SerializeField][Min(3f)] private float _readingDelay = 5f;
+    
+    public bool IsDisplaying { get; set; }
+
+    public event Action RequestNextLine;
+    public event Action OnDisplayTextHidden;
 
     private void OnEnable()
     {
-        TypewriterEffect.CompleteTextRevealed += HideTextPanel;
-        CollectiblesManager.OnObjectCollection += ShowCollectibleText;
+        _typewriter.CompleteTextRevealed += HandleLineEnd;
     }
 
     private void OnDisable()
     {
-        TypewriterEffect.CompleteTextRevealed -= HideTextPanel;
-        CollectiblesManager.OnObjectCollection -= ShowCollectibleText;
+        _typewriter.CompleteTextRevealed -= HandleLineEnd;
     }
-    private void Awake()
+    
+    public void ShowPanel()
     {
-        _tmpro = _tmproBox.GetComponent<TextMeshProUGUI>();
-        _typewriter = _tmproBox.GetComponent<TypewriterEffect>();
-    }
-
-    private void Start()
-    {
-        ShowEntryText();
+        StopAllCoroutines();
+        
+        _bgImage.SetActive(true);
+        _tmproBox.SetActive(true);
     }
 
-    private void ShowEntryText()
+    public void ShowText(string newLine)
     {
-        _typewriter.StartTypewriter(_demoText);
-    }
-
-    private void ShowCollectibleText(string collectibleText)
-    {
+        StopAllCoroutines();
+        
         _tmproBox.SetActive(true);
         _bgImage.SetActive(true);
 
-        _typewriter.StartTypewriter(collectibleText);
+        if (_typewriter != null)
+        {
+            _typewriter.StartTypewriter(newLine);
+        }
+        else Debug.LogError($"TextPanelManager: typewriter effect not initialized!");
     }
 
-    private void HideTextPanel()
+    public void HidePanel()
+    {
+        StopAllCoroutines();
+        
+        _bgImage.SetActive(false);
+        _tmproBox.SetActive(false);
+    }
+    
+    public void ClosePanel()
     {
         StartCoroutine(WaitForPlayerToRead());
     }
-
+    
+    private void HandleLineEnd()
+    {
+        RequestNextLine?.Invoke();
+    }
+    
     private IEnumerator WaitForPlayerToRead()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(_readingDelay);
 
-        OnCollectibleTextHidden?.Invoke();
-
-        _tmproBox.SetActive(false);
-        _bgImage.SetActive(false);
+        OnDisplayTextHidden?.Invoke();
+        HidePanel();
     }
 }
