@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using DataAndLoaders;
+using Collectibles;
 
 /// <summary>
 /// Narrative structure & pacing points
@@ -22,12 +22,14 @@ public enum NarrativePoint
 /// </summary>
 public class NarrativeManager : MonoBehaviour
 {
+    [Header("Module references")]
     [SerializeField] private GRH_ScriptLoader _scriptLoader;
     [SerializeField] private UIManager _uiManager;
+    [SerializeField] private CollectiblesManager _collectiblesManager;
 
     private ScriptData _narrative;
     private string[] _currentNarrativeLines;
-    private int _lineInNarrativeIndex = 0;
+    private int _currentLineIndex = 0;
     private bool _isCurrentNarrativeInBatch;
 
     private NarrativePoint[] _storySequence =
@@ -40,85 +42,103 @@ public class NarrativeManager : MonoBehaviour
         NarrativePoint.MomBridge,
         NarrativePoint.MomTrail,
     };
+
+    private int _currentNarrativePointIndex;
     
     public event Action OnNarrativeSequenceComplete;
+    public event Action OnNarrativeFinished;
 
-    private void OnEnable() => _scriptLoader.OnScriptLoaded += InitializeNarrativeSequence;
-    private void OnDisable() => _scriptLoader.OnScriptLoaded -= InitializeNarrativeSequence;
-    
-    private void InitializeNarrativeSequence(ScriptData script)
+    private void OnEnable()
     {
-        Debug.Log("Got the script");
-        _narrative = script;
-        SetCurrentNarrative(NarrativePoint.GirlStart);
+        _scriptLoader.OnScriptLoaded += InitializeNarrativeSequence;
+        _collectiblesManager.OnObjectCollection += OnPlayerProgress;
     }
 
-    public void SetCurrentNarrative(NarrativePoint currentNarrative) // will be used also on player entering trigger points
+    private void OnDisable()
     {
-        _lineInNarrativeIndex = 0; // only when we change narrative is lines index reset
+        _scriptLoader.OnScriptLoaded -= InitializeNarrativeSequence;
+        _collectiblesManager.OnObjectCollection -= OnPlayerProgress;
+    }
+
+    private void InitializeNarrativeSequence(ScriptData script) // we start narrative as the script is loaded
+    {
+        _narrative = script;
+        _currentNarrativePointIndex = 0;
+        
+        SetCurrentNarrative(_storySequence[_currentNarrativePointIndex]); // start on Girl monologue
+        GoToNextLine();
+    }
+
+    public void SetCurrentNarrative(NarrativePoint currentNarrative) // can be used to start narrative in game manager
+    {
+        _currentLineIndex = 0; // only when we change narrative is lines index reset
         
         _currentNarrativeLines = GetLinesByPoint(currentNarrative);
-        
         _isCurrentNarrativeInBatch = IsInBatch(currentNarrative);
-        
-        ShowLine();
     }
     
-    private void ShowLine()
+    private void GoToNextNarrativePoint()
     {
-        _uiManager.SetNarrativePoint(_currentNarrativeLines[_lineInNarrativeIndex]);
-        _lineInNarrativeIndex++;
-        
-        _uiManager.RequestNextNarrativeLine -= HandleLineFinished;
-        _uiManager.RequestNextNarrativeLine += HandleLineFinished;
-    }
-
-    private void HandleLineFinished()
-    {
-        if (_isCurrentNarrativeInBatch && _lineInNarrativeIndex < _currentNarrativeLines.Length)
+        if (_currentNarrativePointIndex + 1 < _storySequence.Length)
         {
-            ShowLine();
+            _currentNarrativePointIndex++;
+            SetCurrentNarrative(_storySequence[_currentNarrativePointIndex]); // just set next one as in sequence
+            GoToNextLine();
         }
         else
         {
-            _uiManager.RequestNextNarrativeLine -= HandleLineFinished;
-            OnNarrativeSequenceComplete?.Invoke();
+            OnNarrativeFinished?.Invoke();
+        }
+    }
+    
+    private void GoToNextLine()
+    {
+        _uiManager.RequestNextNarrativeLine -= HandleLineFinished;
+
+        if (_currentNarrativeLines != null)
+        {
+            _uiManager.SetLine(_currentNarrativeLines[_currentLineIndex]);
+            _currentLineIndex++;
+        }
+
+        _uiManager.RequestNextNarrativeLine += HandleLineFinished;
+    }
+    
+    private void HandleLineFinished()
+    {
+        _uiManager.RequestNextNarrativeLine -= HandleLineFinished;
+
+        if (_isCurrentNarrativeInBatch && _currentLineIndex < _currentNarrativeLines.Length)
+        {
+            // If it's a batch and we have lines left, just keep going!
+            GoToNextLine();
+        }
+        else
+        {
+            // If it's Step-by-Step OR the Batch is finished: Close the panel and wait.
+            FinishNarrativePoint();
         }
     }
 
-    /*private void ShowLines()
+    private void FinishNarrativePoint()
     {
-        //show line in ui manager
-        //increase line in narrative index (for steps & batch)
-        // subscribe to request next line
-        // - if step by step -> will be showing on every trigger outside from player, closing on every request to show line
-        // - if batch -> repeat showing, closing only on lines end
-        
-        //_uiManager.SetNarrativePoint(_currentNarrativeLines[_lineInNarrativeIndex]);
-        //_lineInNarrativeIndex++;
-        /*if (!_isCurrentNarrativeInBatch)
+        _uiManager.RequestNextNarrativeLine -= HandleLineFinished;
+        OnNarrativeSequenceComplete?.Invoke();
+    }
+    
+    private void OnPlayerProgress()
+    {
+        // If there are lines left in the current point, show the next one
+        if (_currentLineIndex < _currentNarrativeLines.Length)
         {
-            OnNarrativeSequenceComplete?.Invoke();
-
-            _uiManager.RequestNextNarrativeLine -= ShowLine;
-        }*
-        
-        _uiManager.RequestNextNarrativeLine -= ShowLine;
-        _uiManager.RequestNextNarrativeLine += ShowLine;
-
-        if (_isCurrentNarrativeInBatch && _lineInNarrativeIndex < _currentNarrativeLines.Length)
-        {
-            // keep showing ....
-            _uiManager.SetNarrativePoint(_currentNarrativeLines[_lineInNarrativeIndex]);
-            _lineInNarrativeIndex++;
+            GoToNextLine();
         }
-        else // ... until hit lines end (index reset only on new narrative point set)
+        else
         {
-            OnNarrativeSequenceComplete?.Invoke();
-
-            _uiManager.RequestNextNarrativeLine -= ShowLine;
+            // Only if the current point is totally exhausted do we move the story forward
+            GoToNextNarrativePoint();
         }
-    }*/
+    }
 
     private bool IsInBatch(NarrativePoint point) =>
         point == NarrativePoint.GirlStart || point == NarrativePoint.MomStart || point == NarrativePoint.MomBridge;

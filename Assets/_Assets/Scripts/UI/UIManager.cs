@@ -38,8 +38,8 @@ public class UIManager : MonoBehaviour
         OnUIInteractionEnded?.Invoke();
     }
     
-    public void SetNarrativePoint(string text)
-    {
+    public void SetLine(string text)
+    { 
         _textPanelManager.ShowPanel();
         _textPanelManager.ShowText(text);
     }

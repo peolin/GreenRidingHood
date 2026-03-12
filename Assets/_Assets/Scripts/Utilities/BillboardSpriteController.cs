@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class BillboardSpriteController : MonoBehaviour
+namespace Utilities
 {
-    private Camera mainCamera;
-
-    private void Start()
+    public class BillboardSpriteController : MonoBehaviour
     {
-        mainCamera = Camera.main;
-    }
+        private Camera mainCamera;
 
-    private void LateUpdate() 
-    {
-        transform.rotation = mainCamera.transform.rotation;    
+        private void Start()
+        {
+            mainCamera = Camera.main;
+        }
+
+        private void LateUpdate()
+        {
+            transform.rotation = mainCamera.transform.rotation;
+        }
     }
 }
