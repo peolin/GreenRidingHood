@@ -46,7 +46,7 @@ public class NarrativeManager : MonoBehaviour
     private int _currentNarrativePointIndex;
     
     public event Action OnNarrativeSequenceComplete;
-    public event Action OnNarrativeFinished;
+    public event Action OnNarrativeFinished; // signal game end
 
     private void OnEnable()
     {

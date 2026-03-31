@@ -12,7 +12,6 @@ namespace Collectibles
         private CollectibleController _collectibleController;
 
         public event Action OnObjectCollection;
-        public static event Action PlayerFreezeRequested;
 
         private void OnEnable()
         {
@@ -33,9 +32,13 @@ namespace Collectibles
             _collectibleController = triggeredController;
 
             OnObjectCollection?.Invoke();
-            PlayerFreezeRequested?.Invoke();
 
-            _uiManager.OnUIInteractionEnded += DestroyCollectedObject;
+            if (_uiManager != null)
+            {
+                _uiManager.OnUIInteractionEnded -= DestroyCollectedObject;
+                _uiManager.OnUIInteractionEnded += DestroyCollectedObject;
+            }
+            else Debug.LogError("$CollectiblesManager: UIManager not assigned!");
         }
 
         private void DestroyCollectedObject() // shift to using a pool
@@ -47,6 +50,7 @@ namespace Collectibles
                 _collectibleController.DestroyCollectible();
                 _collectibleController = null;
             }
+            else Debug.LogError("$CollectiblesManager: no collectible to destroy!");
         }
     }
 }

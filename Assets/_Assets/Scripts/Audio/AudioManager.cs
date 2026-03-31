@@ -11,6 +11,7 @@ public class AudioManager : MonoBehaviour
     {
         Instance = this;
     }
+    
     private void Start()
     {
         _ambianceAudioController.PlayAmbianceAudio();

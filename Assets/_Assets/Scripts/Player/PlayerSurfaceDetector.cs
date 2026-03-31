@@ -11,17 +11,24 @@ public enum SurfaceType
     Wood
 }
 
+[RequireComponent(typeof(PlayerBehaviour))]
 public class PlayerSurfaceDetector : MonoBehaviour
 {
     private SurfaceType _currentSurfaceType = SurfaceType.Gravel;
+    private PlayerBehaviour _player;
 
     private void OnEnable()
     {
-        PlayerBehaviour.OnPlayerStateChanged += HandlePlayerState;
+        _player.OnPlayerStateChanged += HandlePlayerStateSounds;
     }
     private void OnDisable()
     {
-        PlayerBehaviour.OnPlayerStateChanged -= HandlePlayerState;
+        _player.OnPlayerStateChanged -= HandlePlayerStateSounds;
+    }
+
+    private void Awake()
+    {
+        _player = GetComponent<PlayerBehaviour>();
     }
 
     public void OnTriggerStay(Collider other)
@@ -43,11 +50,11 @@ public class PlayerSurfaceDetector : MonoBehaviour
         }
     }
 
-    private void HandlePlayerState(PlayerState newState)
+    private void HandlePlayerStateSounds(PlayerState newState)
     {
         if (newState != PlayerState.Idle & newState != PlayerState.Jumping)
         {
-            AudioManager.Instance.PlaySurfaceMovementAudio(_currentSurfaceType, newState);
+            AudioManager.Instance.PlaySurfaceMovementAudio(_currentSurfaceType, newState); // Invoke event
         }
     }
 }

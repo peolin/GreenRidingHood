@@ -15,9 +15,10 @@ public enum PlayerState
 public class PlayerBehaviour : MonoBehaviour
 {
     private PlayerState _currentState;
-    public static event Action<PlayerState> OnPlayerStateChanged;
     
+    [Header("Manager References")]
     [SerializeField] private UIManager _uiManager;
+    [SerializeField] private CollectiblesManager _collectiblesManager;
     
     [Header("Player Movement")]
     private bool _canMove = true;
@@ -42,16 +43,18 @@ public class PlayerBehaviour : MonoBehaviour
     private float _limitXRotation = 55f;
 
     private Rigidbody _rigidbody;
+    
+    public event Action<PlayerState> OnPlayerStateChanged;
 
     private void OnEnable()
     {
-        CollectiblesManager.PlayerFreezeRequested += HandlePlayerFreeze;
+        _collectiblesManager.OnObjectCollection += HandlePlayerFreeze;
         _uiManager.OnUIInteractionEnded += UnfreezePlayer;
     }
 
     private void OnDisable()
     {
-        CollectiblesManager.PlayerFreezeRequested -= HandlePlayerFreeze;
+        _collectiblesManager.OnObjectCollection -= HandlePlayerFreeze;
         _uiManager.OnUIInteractionEnded -= UnfreezePlayer;
     }
 
@@ -80,7 +83,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         float mouseX = Input.GetAxis("Mouse X");
 
-        transform.Rotate(Vector3.up * mouseX * _rotationSpeed * Time.deltaTime);
+        transform.Rotate(Vector3.up * (mouseX * _rotationSpeed * Time.deltaTime));
     }
 
     private void CheckMovement()
@@ -136,9 +139,10 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
     */
+    
     private void ApplyGravity()
     {
-        _rigidbody.AddForce(new Vector3(0, -1.0f, 0) * _rigidbody.mass * _gravity);
+        _rigidbody.AddForce(new Vector3(0, -1.0f, 0) * (_rigidbody.mass * _gravity));
     }
 
     private bool IsGrounded()
