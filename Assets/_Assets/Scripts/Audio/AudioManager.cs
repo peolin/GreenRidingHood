@@ -4,7 +4,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
     [SerializeField] private AmbianceAudioController _ambianceAudioController;
-    [SerializeField] private CollectiblesAudioController _collectiblesAudioController;
+    
     [SerializeField] private MovementAudioController _movementAudioController;
 
     private void Awake()
@@ -23,10 +23,5 @@ public class AudioManager : MonoBehaviour
         {
             _movementAudioController.PlaySurfaceMovementAudio(surface, playerState);
         }
-    }
-
-    public void PlayCollectibleAudio()
-    {
-        _collectiblesAudioController.PlayCollectibleAudio();
     }
 }

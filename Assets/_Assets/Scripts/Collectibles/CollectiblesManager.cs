@@ -11,6 +11,7 @@ namespace Collectibles
 
         private CollectibleController _collectibleController;
 
+        [SerializeField] private GameEventSO _pickedCollectibleEvent;
         public event Action OnObjectCollection;
 
         private void OnEnable()
@@ -27,10 +28,11 @@ namespace Collectibles
         {
             if (_collectibleController == triggeredController) return;
 
-            AudioManager.Instance.PlayCollectibleAudio();
+            //AudioManager.Instance.PlayCollectibleAudio();
 
             _collectibleController = triggeredController;
-
+            
+            _pickedCollectibleEvent.Raise();
             OnObjectCollection?.Invoke();
 
             if (_uiManager != null)

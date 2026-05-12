@@ -64,7 +64,7 @@ public class MovementAudioController : MonoBehaviour
                     break;
             }
 
-            int clipIndex = Random.Range(1, currentStateSurfaceSounds.Length);
+            int clipIndex = Random.Range(0, currentStateSurfaceSounds.Length);
 
             _currentClip = currentStateSurfaceSounds[clipIndex];
 
